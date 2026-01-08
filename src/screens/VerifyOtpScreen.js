@@ -83,8 +83,12 @@ export default function VerifyOtpScreen({ route, navigation }) {
 
       <TouchableOpacity onPress={handleResendOtp} disabled={timer > 0}>
         <Text style={[styles.resendText, timer > 0 && styles.resendDisabled]}>
-          Resend OTP
+          {timer > 0 ? `Resend OTP (${timer}s)` : 'Resend OTP'}
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.changeNumberContainer}>
+        <Text style={styles.changeNumberText}>Change Number</Text>
       </TouchableOpacity>
     </View>
   );
@@ -127,5 +131,14 @@ const styles = StyleSheet.create({
   },
   resendDisabled: {
     color: '#666666',
+  },
+  changeNumberContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  changeNumberText: {
+    color: '#CCCCCC',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });

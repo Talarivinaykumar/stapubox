@@ -1,24 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { sendOtp } from '../api/api';
 
 export default function SendOtpScreen({ navigation }) {
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Clear success/error states when screen comes into focus
+      setSuccess(false);
+      setError('');
+    }, [])
+  );
 
   const validateMobile = (number) => {
     return /^[6-9]\d{9}$/.test(number);
   };
 
   const handleSendOtp = async () => {
-    if (!validateMobile(mobile)) return;
+    if (!validateMobile(mobile)) {
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
     
     try {
       setLoading(true);
+      setError('');
       await sendOtp(mobile);
-      navigation.navigate('VerifyOtp', { mobile });
+      setSuccess(true);
+      setTimeout(() => {
+        navigation.navigate('VerifyOtp', { mobile });
+      }, 1000);
     } catch (err) {
-      Alert.alert('Error', 'Failed to send OTP');
+      setError('Failed to send OTP. Please try again.');
+      setSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -38,15 +57,27 @@ export default function SendOtpScreen({ navigation }) {
           <Text style={styles.dropdown}>▼</Text>
         </View>
         <TextInput
-          style={styles.phoneInput}
+          style={[styles.phoneInput, error && styles.phoneInputError]}
           placeholder="9999999999"
           placeholderTextColor="#666"
           keyboardType="number-pad"
           maxLength={10}
           value={mobile}
-          onChangeText={setMobile}
+          onChangeText={(text) => {
+            setMobile(text);
+            setError('');
+            setSuccess(false);
+          }}
         />
       </View>
+
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
+
+      {success ? (
+        <Text style={styles.successText}>OTP sent successfully!</Text>
+      ) : null}
 
       <TouchableOpacity 
         style={[styles.sendButton, validateMobile(mobile) && styles.sendButtonActive]}
@@ -66,8 +97,6 @@ export default function SendOtpScreen({ navigation }) {
           <Text style={styles.createAccountLink}>Create Account</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.bottomIndicator} />
     </View>
   );
 }
@@ -117,6 +146,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  phoneInputError: {
+    borderColor: '#FF4444',
+  },
+  errorText: {
+    color: '#FF4444',
+    fontSize: 14,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  successText: {
+    color: '#4CAF50',
+    fontSize: 14,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   sendButton: {
     backgroundColor: '#4A4A4A',
