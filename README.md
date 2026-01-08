@@ -1,97 +1,144 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# StapuBox - OTP Registration App
 
-# Getting Started
+A React Native mobile application for OTP-based authentication with SMS auto-read functionality.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- 📱 Mobile number validation (Indian numbers)
+- 📨 OTP sending and verification
+- 🔄 OTP resend with cooldown timer
+- 📲 SMS auto-read (Android)
+- ✅ Auto-submit when OTP is complete
+- 🎨 Error highlighting and validation
+- 🔙 Change number functionality
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Setup Instructions
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Prerequisites
 
-```sh
-# Using npm
-npm start
+- Node.js (>=20)
+- React Native CLI
+- Android Studio (for Android development)
+- Java Development Kit (JDK 17)
 
-# OR using Yarn
-yarn start
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd stapubox
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Android Setup**
+   ```bash
+   cd android
+   ./gradlew clean
+   cd ..
+   ```
+
+4. **Start Metro**
+   ```bash
+   npm start
+   ```
+
+5. **Run on Android**
+   ```bash
+   npm run android
+   ```
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```
+REACT_APP_API_TOKEN=your_api_token_here
 ```
 
-## Step 2: Build and run your app
+## API Configuration
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+The app uses the following APIs:
 
-### Android
+- **Base URL**: `https://stapubox.com/trial`
+- **Send OTP**: `POST /sendOtp`
+- **Resend OTP**: `POST /resendOtp?mobile={mobile}`
+- **Verify OTP**: `POST /verifyOtp?mobile={mobile}&otp={otp}`
 
-```sh
-# Using npm
-npm run android
+## Project Structure
 
-# OR using Yarn
-yarn android
+```
+src/
+├── api/
+│   └── api.js              # API configuration and calls
+├── components/
+│   └── OtpInput.js         # 4-digit OTP input component
+├── navigation/
+│   └── AppNavigator.js     # Navigation setup
+├── screens/
+│   ├── SendOtpScreen.js    # Mobile number input screen
+│   ├── VerifyOtpScreen.js  # OTP verification screen
+│   └── SuccessScreen.js    # Success confirmation screen
+└── utils/
+    └── constants.js        # App constants
 ```
 
-### iOS
+## Key Features Implementation
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+### SMS Auto-Read (Android)
+- Uses `react-native-sms-retriever` library
+- Automatically extracts 4-digit OTP from SMS
+- Graceful fallback if SMS permissions are denied
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### OTP Validation
+- Real-time validation with API
+- Error highlighting on invalid OTP
+- Auto-clear OTP on verification failure
 
-```sh
-bundle install
+### Mobile Number Validation
+- Indian mobile number format (10 digits, starts with 6-9)
+- Real-time input validation
+- Error states with clear messaging
+
+## Build APK
+
+```bash
+cd android
+./gradlew assembleRelease
 ```
 
-Then, and every time you update your native dependencies, run:
+The APK will be generated at: `android/app/build/outputs/apk/release/app-release.apk`
 
-```sh
-bundle exec pod install
+## Known Issues
+
+1. SMS auto-read requires SMS permissions on Android 6+
+2. API token is currently hardcoded (should use environment variables in production)
+3. Limited error handling for network failures
+
+## Technical Decisions
+
+1. **React Navigation**: Used for screen navigation with stack navigator
+2. **Axios**: For API calls with interceptors for error handling
+3. **SMS Retriever**: Android-specific SMS auto-read functionality
+4. **State Management**: Local state with React hooks (sufficient for this scope)
+
+## Testing
+
+Run tests with:
+```bash
+npm test
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Dependencies
 
-```sh
-# Using npm
-npm run ios
+- React Native 0.83.1
+- React Navigation 7.x
+- Axios for API calls
+- react-native-sms-retriever for SMS auto-read
 
-# OR using Yarn
-yarn ios
-```
+## License
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+This project is for assignment purposes.
