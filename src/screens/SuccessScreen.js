@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function SuccessScreen({ navigation }) {
+export default function SuccessScreen({ route, navigation }) {
+  const { message, nextScreen } = route.params || {};
+  
   const handleContinue = () => {
+    const targetScreen = nextScreen || 'SendOtp';
     navigation.reset({
       index: 0,
-      routes: [{ name: 'SendOtp' }],
+      routes: [{ name: targetScreen }],
     });
   };
 
@@ -14,7 +17,7 @@ export default function SuccessScreen({ navigation }) {
       <Text style={styles.successIcon}>✅</Text>
       <Text style={styles.successTitle}>Success!</Text>
       <Text style={styles.successMessage}>
-        Your account has been verified successfully
+        {message || 'Your account has been verified successfully'}
       </Text>
       
       <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>

@@ -4,6 +4,7 @@ import SendOtpScreen from '../screens/SendOtpScreen';
 import VerifyOtpScreen from '../screens/VerifyOtpScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import RegistrationStep2Screen from '../screens/RegistrationStep2Screen';
+import RegistrationReviewScreen from '../screens/RegistrationReviewScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SuccessScreen from '../screens/SuccessScreen';
@@ -17,6 +18,7 @@ export default function AppNavigator() {
       <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} />
       <Stack.Screen name="Registration" component={RegistrationScreen} />
       <Stack.Screen name="RegistrationStep2" component={RegistrationStep2Screen} />
+      <Stack.Screen name="RegistrationReview" component={RegistrationReviewScreen} />
       <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="Success" component={SuccessScreen} />

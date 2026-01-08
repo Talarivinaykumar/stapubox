@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Pressable } from 'react-native';
 
 const playingStatusOptions = [
   'Looking for Playground',
@@ -12,6 +12,9 @@ const sportsOptions = [
   'Basketball',
   'Boxing',
   'Cricket',
+  'Football',
+  'Tennis',
+  'Volleyball',
 ];
 
 export default function RegistrationStep2Screen({ route, navigation }) {
@@ -23,22 +26,29 @@ export default function RegistrationStep2Screen({ route, navigation }) {
 
   const handleNext = () => {
     const updatedData = { ...registrationData, playingStatus, sport };
-    navigation.navigate('FeedbackScreen', { registrationData: updatedData });
+    navigation.navigate('RegistrationReview', { registrationData: updatedData });
   };
 
   const isFormValid = playingStatus && sport;
 
-  const renderDropdownItem = ({ item }) => (
+  const renderPlayingStatusItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.dropdownItem}
       onPress={() => {
-        if (showPlayingStatusModal) {
-          setPlayingStatus(item);
-          setShowPlayingStatusModal(false);
-        } else {
-          setSport(item);
-          setShowSportModal(false);
-        }
+        setPlayingStatus(item);
+        setShowPlayingStatusModal(false);
+      }}
+    >
+      <Text style={styles.dropdownItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  const renderSportItem = ({ item }) => (
+    <TouchableOpacity 
+      style={styles.dropdownItem}
+      onPress={() => {
+        setSport(item);
+        setShowSportModal(false);
       }}
     >
       <Text style={styles.dropdownItemText}>{item}</Text>
@@ -52,64 +62,103 @@ export default function RegistrationStep2Screen({ route, navigation }) {
           <Text style={styles.backButton}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Enter your details</Text>
+        <View style={styles.placeholder} />
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Playing Status</Text>
-        <TouchableOpacity 
-          style={styles.dropdown}
-          onPress={() => setShowPlayingStatusModal(true)}
-        >
-          <Text style={[styles.dropdownText, !playingStatus && styles.placeholder]}>
-            {playingStatus || 'Looking for Playground'}
-          </Text>
-          <Text style={styles.dropdownArrow}>▼</Text>
-        </TouchableOpacity>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Playing Status</Text>
+          <Text style={styles.helper}>What are you looking for?</Text>
+          <TouchableOpacity 
+            style={[styles.dropdown, playingStatus && styles.dropdownSelected]}
+            onPress={() => setShowPlayingStatusModal(true)}
+          >
+            <Text style={[styles.dropdownText, !playingStatus && styles.placeholder]}>
+              {playingStatus || 'Select your status'}
+            </Text>
+            <Text style={styles.dropdownArrow}>▼</Text>
+          </TouchableOpacity>
+        </View>
 
-        <Text style={styles.label}>Sport you like *</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Sport you like *</Text>
+          <Text style={styles.helper}>Choose your favorite sport</Text>
+          <TouchableOpacity 
+            style={[styles.dropdown, sport && styles.dropdownSelected]}
+            onPress={() => setShowSportModal(true)}
+          >
+            <Text style={[styles.dropdownText, !sport && styles.placeholder]}>
+              {sport || 'Select a sport'}
+            </Text>
+            <Text style={styles.dropdownArrow}>▼</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          style={styles.dropdown}
-          onPress={() => setShowSportModal(true)}
+          style={[styles.nextButton, isFormValid && styles.nextButtonActive]}
+          onPress={handleNext}
+          disabled={!isFormValid}
         >
-          <Text style={[styles.dropdownText, !sport && styles.placeholder]}>
-            {sport || 'Badminton'}
-          </Text>
-          <Text style={styles.dropdownArrow}>▼</Text>
+          <Text style={styles.nextButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity 
-        style={[styles.nextButton, isFormValid && styles.nextButtonActive]}
-        onPress={handleNext}
-        disabled={!isFormValid}
-      >
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-
       {/* Playing Status Modal */}
-      <Modal visible={showPlayingStatusModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
+      <Modal 
+        visible={showPlayingStatusModal} 
+        transparent 
+        animationType="fade"
+        onRequestClose={() => setShowPlayingStatusModal(false)}
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setShowPlayingStatusModal(false)}
+        >
           <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Playing Status</Text>
+              <TouchableOpacity onPress={() => setShowPlayingStatusModal(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
             <FlatList
               data={playingStatusOptions}
-              renderItem={renderDropdownItem}
+              renderItem={renderPlayingStatusItem}
               keyExtractor={(item) => item}
+              showsVerticalScrollIndicator={false}
             />
           </View>
-        </View>
+        </Pressable>
       </Modal>
 
       {/* Sport Modal */}
-      <Modal visible={showSportModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
+      <Modal 
+        visible={showSportModal} 
+        transparent 
+        animationType="fade"
+        onRequestClose={() => setShowSportModal(false)}
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setShowSportModal(false)}
+        >
           <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Your Sport</Text>
+              <TouchableOpacity onPress={() => setShowSportModal(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
             <FlatList
               data={sportsOptions}
-              renderItem={renderDropdownItem}
+              renderItem={renderSportItem}
               keyExtractor={(item) => item}
+              showsVerticalScrollIndicator={false}
             />
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -119,33 +168,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#2A2A2A',
-    paddingHorizontal: 24,
-    paddingTop: 60,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 40,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 20,
   },
   backButton: {
     color: '#FFFFFF',
     fontSize: 24,
-    marginRight: 16,
+    fontWeight: '600',
   },
   title: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
   },
+  placeholder: {
+    width: 24,
+  },
   form: {
     flex: 1,
+    paddingHorizontal: 24,
+  },
+  inputGroup: {
+    marginBottom: 32,
   },
   label: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
-    marginBottom: 8,
-    marginTop: 20,
+    marginBottom: 4,
+  },
+  helper: {
+    color: '#CCCCCC',
+    fontSize: 14,
+    marginBottom: 12,
   },
   dropdown: {
     backgroundColor: '#3A3A3A',
@@ -155,6 +216,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  dropdownSelected: {
+    borderColor: '#007AFF',
+    backgroundColor: '#404040',
   },
   dropdownText: {
     color: '#FFFFFF',
@@ -167,12 +234,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
   },
+  buttonContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
   nextButton: {
     backgroundColor: '#4A4A4A',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 40,
   },
   nextButtonActive: {
     backgroundColor: '#007AFF',
@@ -184,20 +254,39 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    maxHeight: 300,
+    borderRadius: 12,
+    maxHeight: 400,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000000',
+  },
+  modalClose: {
+    fontSize: 18,
+    color: '#666666',
+    fontWeight: '600',
   },
   dropdownItem: {
     paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#F0F0F0',
   },
   dropdownItemText: {
     fontSize: 16,
